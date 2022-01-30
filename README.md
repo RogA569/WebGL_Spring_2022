@@ -1,2 +1,2 @@
 # WebGL_Spring_2022
-IDM WebGL class (Special Topics in Digital Media)
+This is the repo for my IDM WebGL class (Special Topics in Digital Media);
