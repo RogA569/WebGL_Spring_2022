@@ -1,0 +1,25 @@
+{
+  "name": "week2",
+  "version": "1.0.0",
+  "description": "Week 2 Iterative Pattern assignment package",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "watch": "tsc --watch",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/offscreencanvas": "^2019.6.4",
+    "pixi.js": "^6.2.2",
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "RogA569/WebGL_Spring_2022/week2"
+  },
+  "author": "Roger Argueta",
+  "license": "ISC"
+}
