@@ -172,11 +172,11 @@ const main = async () => {
   // Handle window resizing
   window.addEventListener('resize', (_e) => {
       app.renderer.resize(window.innerWidth, window.innerHeight);
-      center_branches_eyes_containers.forEach(function(branches_eyes_container) {
-        // How do I type/annotate these two properties so that I don't get the red squiggly?
-        branches_eyes_container.x = window.innerWidth / 2;
-        branches_eyes_container.y = window.innerHeight / 2;
-      });
+      // center_branches_eyes_containers.forEach(function(branches_eyes_container) {
+           // How do I type/annotate these two properties so that I don't get the red squiggly?
+      //   branches_eyes_container.x = window.innerWidth / 2;
+      //   branches_eyes_container.y = window.innerHeight / 2;
+      // });
 
       // THIS METHOD DO WHAT THE CENTER_BRANCHES_EYES_CONTAINERS ARRAY DOES (POSITION THE BRANCHES RELATIVE TO THE WINDOW SIZE)
       top_branches_eyes_container.x = 0;
