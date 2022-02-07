@@ -1,18 +1,8 @@
-import * as PIXI from "pixi.js"
-
-const load = (app: PIXI.Application) => {
-  return new Promise<void>((resolve) => {
-      app.loader
-        // .add('shader', 'assets/shader.frag')
-        .load(() => {
-        resolve();
-      });
-  });
-};
+import * as PIXI from "pixi.js";
 
 const main = async () => {
   // Actual app
-  let app = new PIXI.Application({antialias: true});
+  let app = new PIXI.Application();
 
   // Display application properly
   document.body.style.margin = '0';
@@ -20,9 +10,6 @@ const main = async () => {
   app.renderer.view.style.display = 'block';
   app.renderer.resize(window.innerWidth, window.innerHeight); // view size = window
   app.renderer.backgroundColor = 0x000517;
-
-  // Load assets
-  await load(app);
 
   function create_branches_eyes() {
 
