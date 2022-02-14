@@ -10,16 +10,6 @@ const load = (app: PIXI.Application) => {
     });
 };
 
-// let model = {
-//     scene: SceneState.first,
-//     myButtonData: {
-//         width: 200,
-//         height: 100,
-//         myButton1_color: "#0000FF",
-//         myButton2_color: "#FF0000"
-//     }
-// }
-
 let rectangles: PIXI.Sprite[] = [];
 
 const main = async () => {
@@ -42,19 +32,19 @@ const main = async () => {
     let rectangle_x = 0;
     let rectangle_y = innerHeight / 30
 
-    for (let i = 0; i < 24; i++) {
-        let rectangle = new PIXI.Sprite(app.loader.resources['wood'].texture);
-        rectangle.width = rectangle_width;
-        rectangle.height = rectangle_height;
-        rectangle.x = rectangle_x;
-        rectangle.y = rectangle_y;
-        rectangle_y += 2 * rectangle_height;
-        app.stage.addChild(rectangle);
+    if (rectangles.length == 0) {
+        for (let i = 0; i < 24; i++) {
+            let rectangle = new PIXI.Sprite(app.loader.resources['wood'].texture);
+            rectangle.width = rectangle_width;
+            rectangle.height = rectangle_height;
+            rectangle.x = rectangle_x;
+            rectangle.y = rectangle_y;
+            rectangle_y += 2 * rectangle_height;
+            app.stage.addChild(rectangle);
 
-        rectangles.push(rectangle);
+            rectangles.push(rectangle);
+        }
     }
-
-    
 
     // Handle window resizing
     window.addEventListener('resize', (_e) => {
@@ -66,11 +56,6 @@ const main = async () => {
     document.body.appendChild(app.view);
 
     const gui = new dat.GUI();
-    // These three lines are our control/controllers
-    // gui.add(model.myButtonData, "width", 0, 500);
-    // gui.add(model.myButtonData, "height", 0, 300);
-    // gui.addColor(model.myButtonData, "myButton1_color");
-    // gui.addColor(model.myButtonData, "myButton2_color");
 
     let context = {
         velocity: { x: 1, y: 1 },
@@ -80,29 +65,29 @@ const main = async () => {
     app.ticker.add(update, context);
 };
 
+let total_dist_traveled = 0;
 // Cannot be an arrow function. Arrow functions cannot have a 'this' parameter.
 function update(this: any) {
     this.time = new Date();
-    // console.log(this.time);
-
-    // let total_dist_six_hours = 6 * (innerWidth / 2)
-    // let total_dist_traveled = 0;
+    
     let dist_traveled = 0;
-    let total_dist_traveled = 0;
+    let distance_per_day = innerWidth - rectangles[0].width;
     for (let rectangle in rectangles) {
-        let distance_per_day = innerWidth - rectangles[rectangle].width;
-        let indiv_rect_interval = distance_per_day / 60;
+        let indiv_rect_interval = distance_per_day / 60 ** 3;
         if (rectangles[rectangle].x <= innerWidth - rectangles[rectangle].width && dist_traveled == 0) {
             rectangles[rectangle].x  += indiv_rect_interval; // interval
             dist_traveled += indiv_rect_interval;
+            total_dist_traveled += dist_traveled;
         }
-        total_dist_traveled += dist_traveled;
-        console.log(total_dist_traveled)
-        // if (dist_traveled >= distance_per_day) {
-        //     dist_traveled = 0;
-        //     console.log('test');
-        // }
+    }
+
+    if (Math.ceil(total_dist_traveled) >= distance_per_day * 24) {
+        total_dist_traveled = 0;
+        for (let rectangle in rectangles) {
+            rectangles[rectangle].x = 0;
+        }
     }
 }
+
 
 main();
