@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import { Model } from './model/model'
 import { guiSetup } from './controllers/gui';
 import { gsap } from "gsap";
-import { lerp, easeIn, easeOut } from "./utils/easing";
+import { lerp, easeIn, easeOut, easeinOutSine } from "./utils/easing";
 
 let mModel = new Model();
 
@@ -46,7 +46,7 @@ const main = async () => {
     // 100 lines in total (50 on top, 50 on bottom)
 
     // top left
-	for (let i = 0; i < 25; i++) {
+	for (let i = 0; i < 77; i++) {
 		const element = new PIXI.Graphics();
 		
 		// element.x = 0
@@ -66,7 +66,7 @@ const main = async () => {
 	}
 
 	// top right
-	for (let i = 0; i < 25; i++) {
+	for (let i = 0; i < 77; i++) {
 		const element = new PIXI.Graphics();
 		
 		// element.x = 0
@@ -86,7 +86,7 @@ const main = async () => {
 	}
 
 	// bottom left
-	for (let i = 0; i < 25; i++) {
+	for (let i = 0; i < 77; i++) {
 		const element = new PIXI.Graphics();
 		
 		// element.x = 0
@@ -106,11 +106,8 @@ const main = async () => {
 	}
 
 	// bottom right
-	for (let i = 0; i < 25; i++) {
+	for (let i = 0; i < 77; i++) {
 		const element = new PIXI.Graphics();
-		
-		// element.x = 0
-		// element.y = 0
 
 		element.x = window.innerWidth / 2 + 5
 		element.y = window.innerHeight / 2
@@ -153,38 +150,74 @@ const main = async () => {
 
     guiSetup(mModel, tl);
 
-    // top left
+    // top left (original)
 	top_left_sizes.forEach((size, i) => {
 		tl.to(size,
 		{
-			value: -150 + (Math.sqrt(i) * 30),
+			value: -265 + (Math.sqrt(i) * 37),
 			duration: 0.025
 		},)
 	})
 
-	// top right
+	// top right (original)
 	top_right_sizes.forEach((size, i) => {
 		tl.to(size,
 		{
-			value: -150 + (Math.sqrt(i) * 30),
+			value: -270 + (Math.sqrt(i) * 37),
 			duration: 0.025
 		},)
 	})
 
-	// bottom left
+	// bottom left (original)
 	bottom_left_sizes.forEach((size, i) => {
 		tl.to(size,
 		{
-			value: 150 - (Math.sqrt(i) * 30),
+			value: 270 - (Math.sqrt(i) * 37),
 			duration: 0.025
 		},)
 	})
 
-    // bottom right
+    // bottom right (original)
 	bottom_right_sizes.forEach((size, i) => {
 		tl.to(size,
 		{
-			value: 150 - (Math.sqrt(i) * 30),
+			value: 265 - (Math.sqrt(i) * 37),
+			duration: 0.025
+		},)
+	})
+
+	// top left (remixed)
+	top_left_sizes.forEach((size, i) => {
+		tl.to(size,
+		{
+			value: easeinOutSine(i) * -300,
+			duration: 0.025
+		},)
+	})
+
+	// top right (remixed)
+	top_right_sizes.forEach((size, i) => {
+		tl.to(size,
+		{
+			value: easeinOutSine(i) * -300,
+			duration: 0.025
+		},)
+	})
+
+	// bottom left (remixed)
+	bottom_left_sizes.forEach((size, i) => {
+		tl.to(size,
+		{
+			value: easeinOutSine(i) * 300,
+			duration: 0.025
+		},)
+	})
+
+	// bottom right (remixed)
+	bottom_right_sizes.forEach((size, i) => {
+		tl.to(size,
+		{
+			value: easeinOutSine(i) * 300,
 			duration: 0.025
 		},)
 	})
@@ -197,36 +230,68 @@ function update(delta: number) {
 
     mModel.elapsedTime += delta;
 
-	// top left
+	// top left (original)
 	top_left_graphs.forEach((graph, i) => {
 		graph.clear()
 		graph.beginFill(0xffffff)
 		graph.lineStyle(5, 0x4900B8)
-		graph.lineTo(0, lerp(0, top_left_sizes[i].value, easeIn(1.1)))
+		graph.lineTo(0, lerp(0, top_left_sizes[i].value, easeIn(1.19)))
 	})
 
-	// top right
+	// top right (original)
 	top_right_graphs.forEach((graph, i) => {
 		graph.clear()
 		graph.beginFill(0xffffff)
 		graph.lineStyle(5, 0x4900B8)
-		graph.lineTo(0, lerp(0, top_right_sizes[i].value, easeIn(1.1)))
+		graph.lineTo(0, lerp(0, top_right_sizes[i].value, easeIn(1.19)))
 	})
 
-	// bottom left
+	// bottom left (original)
 	bottom_left_graphs.forEach((graph, i) => {
 		graph.clear()
 		graph.beginFill(0xffffff)
 		graph.lineStyle(5, 0x4900B8)
-		graph.lineTo(0, lerp(0, bottom_left_sizes[i].value, easeIn(1.1)))
+		graph.lineTo(0, lerp(0, bottom_left_sizes[i].value, easeIn(1.19)))
 	})
 
-    // bottom right
+    // bottom right (original)
 	bottom_right_graphs.forEach((graph, i) => {
 		graph.clear()
 		graph.beginFill(0xffffff)
 		graph.lineStyle(5, 0x4900B8)
-		graph.lineTo(0, lerp(0, bottom_right_sizes[i].value, easeIn(1.1)))
+		graph.lineTo(0, lerp(0, bottom_right_sizes[i].value, easeIn(1.19)))
+	})
+
+	// top left (remixed)
+	top_left_graphs.forEach((graph, i) => {
+		graph.clear()
+		graph.beginFill(0xffffff)
+		graph.lineStyle(5, 0x4900B8)
+		graph.lineTo(0, top_left_sizes[i].value)
+	})
+
+	// top right (remixed)
+	top_right_graphs.forEach((graph, i) => {
+		graph.clear()
+		graph.beginFill(0xffffff)
+		graph.lineStyle(5, 0x4900B8)
+		graph.lineTo(0, top_right_sizes[i].value)
+	})
+
+	// bottom left (remixed)
+	bottom_left_graphs.forEach((graph, i) => {
+		graph.clear()
+		graph.beginFill(0xffffff)
+		graph.lineStyle(5, 0x4900B8)
+		graph.lineTo(0, bottom_left_sizes[i].value)
+	})
+
+	// bottom right (remixed)
+	bottom_right_graphs.forEach((graph, i) => {
+		graph.clear()
+		graph.beginFill(0xffffff)
+		graph.lineStyle(5, 0x4900B8)
+		graph.lineTo(0, bottom_right_sizes[i].value)
 	})
 };
 

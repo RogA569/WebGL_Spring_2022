@@ -11,6 +11,10 @@ export function easeOut(t: number): number {
     return flip(easeIn(flip(t)))
 }
 
+export function easeinOutSine(t: number): number {
+    return flip(easeOut(flip(Math.sin(t))))
+}
+
 function flip(x: number): number {
     return 1 - x;
 }
