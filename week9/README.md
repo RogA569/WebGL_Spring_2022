@@ -1,0 +1,3 @@
+I will create a still-life rendition of a picture that I take at my home, in my kitcken. There will be various objects on a table.
+
+![An opened styrofoam container, with food and other objects, is on a kitchen table. The table itself has three pads on it. The food in the container consists of two pupusas, while the other objects include a toothpick container and a hot sauce bottle.](/assets/IMG_1367.jpg)
