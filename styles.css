@@ -17,7 +17,6 @@ summary {
 	background-color: rgba(215, 239, 232, 0.75);
 }
 
-links-list a,
 span {
 	display: inline-flex;
 	width: 25vw;
@@ -27,4 +26,13 @@ span {
 	margin-top: -40px;
 	justify-content: center;
 	background-color: #48C4DB;
+}
+
+a {
+	color: #513D0F;
+}
+
+a:hover {
+	color: #A60000;
+	background-color: #009900;
 }
