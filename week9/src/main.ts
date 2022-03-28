@@ -78,26 +78,38 @@ function initScene() {
     // Hot sauce bottle
     const cylinderRadialSegments = 64; // both cylinders (main body / bottle cap) use this
     const cylinderMaterial = new THREE.MeshToonMaterial({color: 0xFF0000}); // both cylinders (main body / bottle cap) use this
+    const bottleXPos = -2.5;
+    const bottleZPos = 0.9;
 
     // main body
     const cylinder1Radius = 0.5;
     const cylinder1Height = 1.5;
     const cylinder1Geometry = new THREE.CylinderGeometry(cylinder1Radius, cylinder1Radius, cylinder1Height, cylinderRadialSegments);
     cylinder1 = new THREE.Mesh(cylinder1Geometry, cylinderMaterial);
-    cylinder1.position.y = 0.42;
+    cylinder1.position.set(bottleXPos, 0.42, bottleZPos);
     scene.add(cylinder1);
 
     // bottle neck
     const coneRadius = 0.5;
-    const coneHeight = 1.5;
+    const coneHeight = 1.1;
     const coneRadialSegments = 64;
     const coneGeometry = new THREE.ConeGeometry(coneRadius, coneHeight, coneRadialSegments);
     const coneMaterial = new THREE.MeshToonMaterial({color: 0xFFCB05});
+
     coneMaterial.transparent = true; // to allow opacity changes
     coneMaterial.opacity = 0.7; // from base Material class
+
     const cone = new THREE.Mesh(coneGeometry, coneMaterial);
-    cone.position.y = 1.91;
+    cone.position.set(bottleXPos, 1.72, bottleZPos);
     scene.add(cone);
+
+    // bottle cap
+    const cylinder2Radius = 0.15;
+    const cylinder2Height = 0.15;
+    const cylinder2Geometry = new THREE.CylinderGeometry(cylinder2Radius, cylinder2Radius, cylinder2Height, cylinderRadialSegments);
+    cylinder2 = new THREE.Mesh(cylinder2Geometry, cylinderMaterial);
+    cylinder2.position.set(bottleXPos, 2.2, bottleZPos);
+    scene.add(cylinder2);
 
     // for the GLTFLoaders to refer to
     interface gltfMesh extends THREE.Object3D<THREE.Event> {
