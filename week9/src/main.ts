@@ -2,7 +2,7 @@ import './style.scss';
 import * as THREE from 'three'; 1
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ShaderMaterial } from 'three';
 
 let renderer: THREE.WebGLRenderer;
@@ -15,10 +15,13 @@ let lightPoint: THREE.PointLight;
 let controls: OrbitControls;
 let stats: any;
 
-let cube: THREE.Mesh;
+let cylinder1: THREE.Mesh; // main body of hot sauce bottle
+let cone: THREE.Mesh; // hot sauce bottleneck
+let cylinder2: THREE.Mesh; // cap of the hot sauce bottle
+let toothpickContainerModel: THREE.Group; // toothpick container
+let styrofoamContainerModel: THREE.Group; // a half of a styrofoam container
+let pupusaModel: THREE.Group; // pupusa
 let plane: THREE.Mesh;
-let exampleModel: THREE.Group;
-let exampleTexture: THREE.Texture;
 
 import vertexShader from '../resources/shaders/shader.vert?raw';
 import fragmentShader from '../resources/shaders/shader.frag?raw';
@@ -36,7 +39,14 @@ function initStats() {
 }
 
 function initScene() {
+
     scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x00FF00);
+
+    // (Unused) Scene with a set background; Credit to brgfx for the image
+    // Direct Link: https://www.freepik.com/free-vector/modern-kitchen-interior-with-furniture_16462186.htm
+    // Attribution Link: https://www.freepik.com/vectors/kitchen-cartoon <Kitchen cartoon vector created by brgfx>
+    // scene.background = backgroundTexture;
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
@@ -48,12 +58,6 @@ function initScene() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const cubeGeometry = new THREE.DodecahedronGeometry();
-    const cubeMaterial = new THREE.MeshPhongMaterial({color: 0xF08888});
-    // cubeMaterial.wireframe = true;
-    cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    cube.castShadow = true;
-    scene.add(cube);
 
     controls = new OrbitControls(camera, renderer.domElement);
 
@@ -67,67 +71,125 @@ function initScene() {
     lightPoint.intensity = shadowIntensity;
     scene.add(lightPoint);
 
-    const lightPoint2 = lightPoint.clone();
-    lightPoint2.intensity = 1 - shadowIntensity;
-    lightPoint2.castShadow = false;
-    scene.add(lightPoint2);
+    lightAmbient = new THREE.AmbientLight(0xffffff);
+    lightAmbient.intensity = 0.12;
+    scene.add(lightAmbient);
 
-    // load a texture
-    let textureMaterial: THREE.Material;
-    new THREE.TextureLoader().load('./resources/textures/uv_grid_opengl.jpg', function (texture) {
+    // Hot sauce bottle
+    const cylinderRadialSegments = 64; // both cylinders (main body / bottle cap) use this
+    const cylinderMaterial = new THREE.MeshToonMaterial({color: 0xFF0000}); // both cylinders (main body / bottle cap) use this
 
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    // main body
+    const cylinder1Radius = 0.5;
+    const cylinder1Height = 1.5;
+    const cylinder1Geometry = new THREE.CylinderGeometry(cylinder1Radius, cylinder1Radius, cylinder1Height, cylinderRadialSegments);
+    cylinder1 = new THREE.Mesh(cylinder1Geometry, cylinderMaterial);
+    cylinder1.position.y = 0.42;
+    scene.add(cylinder1);
 
-        exampleTexture = texture;
+    // bottle neck
+    const coneRadius = 0.5;
+    const coneHeight = 1.5;
+    const coneRadialSegments = 64;
+    const coneGeometry = new THREE.ConeGeometry(coneRadius, coneHeight, coneRadialSegments);
+    const coneMaterial = new THREE.MeshToonMaterial({color: 0xFFCB05});
+    coneMaterial.transparent = true; // to allow opacity changes
+    coneMaterial.opacity = 0.7; // from base Material class
+    const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+    cone.position.y = 1.91;
+    scene.add(cone);
 
-        textureMaterial = new THREE.MeshBasicMaterial({ map: texture });
-        cube.material = textureMaterial;
-    });
+    // for the GLTFLoaders to refer to
+    interface gltfMesh extends THREE.Object3D<THREE.Event> {
+        material: THREE.Material;
+    }
 
-    const loader = new GLTFLoader().setPath('/resources/models/');
-    loader.load('bunny.gltf', function (gltf) {
-        exampleModel = gltf.scene;
-        exampleModel.scale.set(.01,.01,.01);
-        exampleModel.position.x = 2;
+    // load toothpick container
+    const loader1 = new GLTFLoader().setPath('/resources/models/');
+    loader1.load('toothpick_container.gltf', function (gltf) {
+        toothpickContainerModel = gltf.scene;
+        toothpickContainerModel.scale.set(.005, .005, .005);
+        toothpickContainerModel.position.set(0, -0.31, -1.5);
 
-        const bunnyMat = new THREE.MeshLambertMaterial({color: 0x22ffff});
+        const toothpickContainerMaterial = new THREE.MeshToonMaterial({color: 0xEDEABC});
+        const toothpickContainTopMaterial = new THREE.MeshToonMaterial({color: 0xCAFFBC});
+        const toothpickContainOpeningMaterial = new THREE.MeshToonMaterial({color: 0x252525});
 
-        interface gltfMesh extends THREE.Object3D<THREE.Event> {
-            material: THREE.Material,
-        }
-
-        exampleModel.traverse((child: THREE.Object3D<THREE.Event>) => {
-            console.log(child);
-            console.log(child.type === "Mesh");
+        toothpickContainerModel.traverse((child: THREE.Object3D<THREE.Event>) => {
+            // console.log(child);
             if (child.type === "Mesh") {
-                (child as gltfMesh).material = bunnyMat;
+                if (child.name === "Cylinder") {
+                    (child as gltfMesh).material = toothpickContainerMaterial;
+                }
+                else if (child.name === "Sphere") {
+                    (child as gltfMesh).material = toothpickContainTopMaterial;
+                }
+                else if (child.name === "Rectangle") {
+                    (child as gltfMesh).material = toothpickContainOpeningMaterial;
+                }
             }
         });
-        scene.add(exampleModel);
+        scene.add(toothpickContainerModel);
     });
 
+    // load styrofoam container
+    const loader2 = new GLTFLoader().setPath('resources/models/');
+    loader2.load('styrofoam_container.gltf', function (gltf) {
+        let styrofoamContainerModels = [];
+        const styrofoamContainerMaterial = new THREE.MeshToonMaterial({color: 0xF1F1F1, side: THREE.DoubleSide});
 
-    // Add a plane
-    const geometryPlane = new THREE.PlaneBufferGeometry(6, 6, 10, 10);
+        styrofoamContainerModel = gltf.scene;
+        styrofoamContainerModel.scale.set(.2, .2, .2);
+        styrofoamContainerModel.position.x = -4.53;
+        styrofoamContainerModels.push(styrofoamContainerModel);
 
-    const uniforms = {
-        u_time: { type: 'f', value: 1.0 },
-        u_resolution: { type: 'v2', value: new THREE.Vector2(800,800) },
-        // u_mouse: { type: 'v2', value: new THREE.Vector2() },
-    };
+        const styrofoamContainerModel2 = styrofoamContainerModel.clone();
+        // console.log(styrofoamContainerModel2);
+        styrofoamContainerModel2.position.x = 0;
+        styrofoamContainerModels.push(styrofoamContainerModel2);
 
-    shaderMat = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-        side: THREE.DoubleSide,
+        for (let model = 0; model < 2; model++) {
+            styrofoamContainerModels[model].traverse((child: THREE.Object3D<THREE.Event>) => {
+                // console.log(child);
+                if (child.type === "Mesh") {
+                    if (child.name === "Cube_2") {
+                        (child as gltfMesh).material = styrofoamContainerMaterial;
+                    }
+                }
+            });
+        }
+        scene.add(styrofoamContainerModel, styrofoamContainerModel2);
     });
 
-    plane = new THREE.Mesh(geometryPlane, shaderMat);
-    plane.position.z = -2;
-    plane.receiveShadow = true;
-    scene.add(plane);
+    // load pupusa
+    const loader3 = new GLTFLoader().setPath('resources/models/');
+    loader3.load('pupusa.gltf', function (gltf) {
+        let pupusaModels = [];
+        const pupusaMaterial = new THREE.MeshToonMaterial({color: 0xCEA064});
+
+        pupusaModel = gltf.scene;
+        pupusaModel.scale.set(.022, .022, .022);
+        pupusaModel.position.set(-0.17, -0.24, 0.63);
+        pupusaModels.push(pupusaModel);
+
+        const pupusaModel2 = pupusaModel.clone();
+        pupusaModel2.position.x = 1.6;
+        pupusaModel2.position.y = -0.2;
+        pupusaModel2.rotation.z = -0.08;
+        pupusaModels.push(pupusaModel2);
+
+        for (let model = 0; model < 2; model++) {
+            pupusaModels[model].traverse((child: THREE.Object3D<THREE.Event>) => {
+                console.log(child);
+                if (child.type === "Mesh") {
+                    if (child.name === "Sphere") {
+                        (child as gltfMesh).material = pupusaMaterial;
+                    }
+                }
+            });
+        }
+        scene.add(pupusaModel, pupusaModel2);
+    });
 
     // Init animation
     animate();
@@ -135,30 +197,6 @@ function initScene() {
 
 function initListeners() {
     window.addEventListener('resize', onWindowResize, false);
-
-    window.addEventListener('keydown', (event) => {
-        const { key } = event;
-
-        switch (key) {
-            case 'e':
-                const win = window.open('', 'Canvas Image');
-
-                const { domElement } = renderer;
-
-                // Makse sure scene is rendered.
-                renderer.render(scene, camera);
-
-                const src = domElement.toDataURL();
-
-                if (!win) return;
-
-                win.document.write(`<img src='${src}' width='${domElement.width}' height='${domElement.height}'>`);
-                break;
-
-            default:
-                break;
-        }
-    });
 }
 
 function onWindowResize() {
@@ -171,15 +209,6 @@ function animate() {
     requestAnimationFrame(() => {
         animate();
     });
-
-    // if (exampleModel != undefined) {
-    //     exampleModel.rotateX(0.01);
-    //     exampleModel.rotateY(0.01);
-    // }
-
-    // if (exampleTexture) {
-        
-    // }
 
     if (stats) stats.update();
 

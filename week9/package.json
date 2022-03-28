@@ -1,5 +1,5 @@
 {
-	"name": "Week 9 Assignment",
+	"name": "week9",
 	"version": "0.0.0",
 	"scripts": {
 		"start": "vite",
@@ -17,6 +17,6 @@
 		"vite": "^2.6.14"
 	},
 	"dependencies": {
-		"three": "^0.134.0"
+		"three": "^0.139.0"
 	}
 }
