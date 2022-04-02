@@ -1,0 +1,5 @@
+My scene will have the user drag their mouse across their screen (click, hold, and move the mouse in any direction). When they do that, it will create cookies (3D models).
+![Sketch showing how cookies are produced by user mousedragging, and ending once the mouse drag stops. Cookies are highlighted in orange, mouse drag in green, mouse in blue.](./assets/IMG_1385.jpg)
+
+The cookies interact with each other via attraction. As soon as two cookies are created, they begin to attract towards each other. Once they have become one (i.e. the second cookie completely overlapping the first), the cookie (second one; first one is removed from scene) doubles in size.
+![Sketch showing how the cookies attract towards one another. The order of cookie attraction is inversely related to their order of creation. After attraction, the scale of the remaining cookie is 4 times bigger than it originally was.](./assets/IMG_1386.jpg)
