@@ -18,5 +18,5 @@
   "watchOptions": {
     "watchFile": "useFsEvents"
   },
-  "include": ["./src"]
+  "include": ["./src", "./node_modules"],
 }
