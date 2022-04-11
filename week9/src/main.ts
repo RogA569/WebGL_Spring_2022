@@ -112,7 +112,7 @@ function initScene() {
     }
 
     // load toothpick container
-    const loader1 = new GLTFLoader().setPath('./resources/models/');
+    const loader1 = new GLTFLoader().setPath('../resources/models/');
     loader1.load('toothpick_container.gltf', function (gltf) {
         toothpickContainerModel = gltf.scene;
         toothpickContainerModel.scale.set(.005, .005, .005);
@@ -140,7 +140,7 @@ function initScene() {
     });
 
     // load styrofoam container
-    const loader2 = new GLTFLoader().setPath('./resources/models/');
+    const loader2 = new GLTFLoader().setPath('../resources/models/');
     loader2.load('styrofoam_container.gltf', function (gltf) {
         let styrofoamContainerModels = [];
         const styrofoamContainerMaterial = new THREE.MeshToonMaterial({color: 0xF1F1F1, side: THREE.DoubleSide});
@@ -169,7 +169,7 @@ function initScene() {
     });
 
     // load pupusa
-    const loader3 = new GLTFLoader().setPath('./resources/models/');
+    const loader3 = new GLTFLoader().setPath('../resources/models/');
     loader3.load('pupusa.gltf', function (gltf) {
         let pupusaModels = [];
         const pupusaMaterial = new THREE.MeshToonMaterial({color: 0xCEA064});

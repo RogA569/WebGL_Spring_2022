@@ -58,7 +58,7 @@ function initStats() {
 
 function initGUI() {
     const gui = new DAT.GUI();
-    gui.add(model, 'gravitConstant', 1, 5);
+    gui.add(model, 'gravitConstant', 1, 4);
     gui.add(model, 'scale', 0.1, 12, 0.5);
 }
 
@@ -86,10 +86,8 @@ function initScene() {
 
     // initialize some cookie values
     cookies = [];
-    velocity = new THREE.Vector3();
-    acceleration = new THREE.Vector3();
-    // use user-defined function getRandomNumInRange(min, max)... defined further down this program
-    randomPosition = new THREE.Vector3(getRandomNumInRange(0, 25), getRandomNumInRange(0, 25), getRandomNumInRange(0, 25));
+    // use user-defined function getRandomNumInRange... defined further down this program
+    randomPosition = new THREE.Vector3(getRandomNumInRange(25), getRandomNumInRange(25), getRandomNumInRange(25));
 
     // Init animation
     animate();
@@ -106,38 +104,67 @@ function initListeners() {
         // MAYBE IMPLEMENT A RESTART KEY EVENT HERE
         switch (key) {
             case ' ':
-                loader.load('cookie.gltf', function (gltf) {
+                if (cookies.length != 3) {
+                    loader.load('cookie.gltf', function (gltf) {
 
-                    const cookieMaterial = new THREE.MeshToonMaterial({color: 0x542919});
+                        const cookieMaterial = new THREE.MeshToonMaterial({color: 0x542919});
 
-                    cookie = gltf.scene;
+                        cookie = gltf.scene;
 
-                    // set to a random position
-                    cookie.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
-                    // shuffle randomPosition for the next time a cookie is created
-                    randomPosition = new THREE.Vector3(getRandomNumInRange(0, 50), getRandomNumInRange(0, 50), getRandomNumInRange(0, 50));
+                        // can be changed with GUI
+                        let cookieScale = model.scale;
+                        cookie.scale.set(cookieScale, cookieScale, cookieScale);
 
-                    // can be changed with GUI
-                    let cookieScale = model.scale;
-                    cookie.scale.set(cookieScale, cookieScale, cookieScale);
+                        if (cookies.length == 0) {                        
+                            cookie.position.set(0, 0, 0);
+                            // For gravitional attraction in function attraction(); only to first cookie created
+                            attractorPoint = new THREE.Vector3(cookie.position.x, cookie.position.y, cookie.position.z);
+                        } else {
+                            // randomPosition for every cookie after first one; using user-defined function getRandomNumInRange... defined further down this program
+                            randomPosition = new THREE.Vector3(getRandomNumInRange(50), getRandomNumInRange(50), getRandomNumInRange(50));
+                            cookie.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
 
-                    if (cookies.length == 0) {                        
-                        // For gravitional attraction in function attraction(); only to first cookie created
-                        attractorPoint = new THREE.Vector3(cookie.position.x, cookie.position.y, cookie.position.z);
-                    }
-
-                    cookies.push(cookie);
-                    baseView.scene.add(cookie);
-
-                    cookie.traverse((child: THREE.Object3D<THREE.Event>) => {
-                        if (child.type === "Mesh") {
-                            let childNameSliced = child.name.slice(0, 4);
-                            if (childNameSliced === "Cone") {
-                                (child as gltfMesh).material = cookieMaterial;
-                            }
+                            velocity = new THREE.Vector3();
+                            acceleration = new THREE.Vector3();
                         }
+
+                        cookies.push(cookie);
+                        baseView.scene.add(cookie);
+
+                        cookie.traverse((child: THREE.Object3D<THREE.Event>) => {
+                            if (child.type === "Mesh") {
+                                let childNameSliced = child.name.slice(0, 4);
+                                if (childNameSliced === "Cone") {
+                                    (child as gltfMesh).material = cookieMaterial;
+                                }
+                            }
+                        });
                     });
-                });
+                }
+                break;
+            case 'ArrowLeft':
+                if (cookies.length > 0) {
+                    cookies[0].position.x -= 0.1;
+                    attractorPoint.setX(cookies[0].position.x);
+                }
+                break;
+            case 'ArrowRight':
+                if (cookies.length > 0) {
+                    cookies[0].position.x += 0.1;
+                    attractorPoint.setX(cookies[0].position.x);
+                }
+                break;
+            case 'ArrowUp':
+                if (cookies.length > 0) {
+                    cookies[0].position.y += 0.1;
+                    attractorPoint.setY(cookies[0].position.y);
+                }
+                break;
+            case 'ArrowDown':
+                if (cookies.length > 0) {
+                    cookies[0].position.y -= 0.1;
+                    attractorPoint.setY(cookies[0].position.y);
+                }
                 break;
             case 'e':
                 const win = window.open('', 'Canvas Image');
@@ -173,23 +200,26 @@ function onPointerMove(event: PointerEvent) {
 
 // The majority of this function's design is based on a Coding Train video I watched (p5.js --> three.js)
 // https://www.youtube.com/watch?v=OAcXnzRNiCY
-function attraction(target: THREE.Vector3) { // target is a cookie's attractorPoint (relative to the other cookies)
-    for (let cookieIndex = 1; cookieIndex < cookies.length; cookieIndex++) {
-        let force = target.sub(cookies[cookieIndex].position);
+function attraction(target: THREE.Vector3, cookie: THREE.Object3D) { // target => attractorPoint
+    let force = target.sub(cookie.position);
 
-        // calculate distance squared, but only after contraining the force's magnitude
-        let distanceSquared = force.clampLength(0, 5).lengthSq();
-        
-        const gravitConstant = model.gravitConstant;
-        let forceLength = gravitConstant / distanceSquared;
-        force.setLength(forceLength);
-        acceleration = force;
-    }
+    // calculate distance squared, but only after contraining the force's magnitude
+    let distanceSquared = force.clampLength(1, 4).lengthSq();
+    
+    const gravitConstant = model.gravitConstant;
+    let forceLength = gravitConstant / distanceSquared;
+    force.setLength(forceLength);
+    acceleration.add(force);
 }
 
 // function from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_number_between_two_values
-function getRandomNumInRange(min: number, max: number) {
-    return Math.random() * (max - min) + min;
+function getRandomNumInRange(minOrMax: number, max?: number) {
+    // this link helped me out with optional parameters:
+    // https://www.typescripttutorial.net/typescript-tutorial/typescript-optional-parameters/
+    if (typeof max !== 'undefined') {
+        return Math.random() * (max - minOrMax) + minOrMax;
+    }
+    return Math.random() * (minOrMax);
 }
 
 function animate() {
@@ -199,12 +229,19 @@ function animate() {
 
     let delta = clock.getDelta();
     
-    // Attraction
-    if (cookies) {
+    // Attraction; this link to Coding Train code assisted me in implementation:
+    // https://github.com/CodingTrain/website/blob/main/CodingChallenges/CC_056_attraction_repulsion/P5/particle.js
+    if (cookies.length > 0) {
+        attractorPoint.set(cookies[0].position.x, cookies[0].position.y, cookies[0].position.z);
         for (let cookieIndex = 1; cookieIndex < cookies.length; cookieIndex++) {
-            attraction(attractorPoint);
-            cookies[cookieIndex].position.add(velocity);
+            attraction(attractorPoint, cookies[cookieIndex]);
             velocity.add(acceleration);
+            velocity.clampLength(0, 7);
+            if (velocity.length() == 7) {
+                console.log("Point!")
+            }
+            cookies[cookieIndex].position.add(velocity);
+            acceleration = new THREE.Vector3(0, 0, 0);
         }
     }
 

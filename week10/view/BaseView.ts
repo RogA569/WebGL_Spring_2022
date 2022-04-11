@@ -71,7 +71,7 @@ export class BaseView {
 			flatShading: true		
 		});
 		this.plane = new Mesh(geometryPlane, materialPlane);
-	    this.plane.position.z = -150;
+	    this.plane.position.z = -200;
 	    this.plane.scale.set(150, 125, 1);
 	    this.plane.receiveShadow = true;
 	    this.scene.add(this.plane);
