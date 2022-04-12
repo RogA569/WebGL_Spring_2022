@@ -299,7 +299,9 @@ function animate() {
             velocity.add(acceleration);
             velocity.clampLength(0, 7);
             if (velocity.length() == 7) {
-                console.log("Point!")
+                window.electronAPI.writeLEDStatus(1);
+            } else {
+                window.electronAPI.writeLEDStatus(0);
             }
             cookies[cookieIndex].position.add(velocity);
             acceleration = new THREE.Vector3(0, 0, 0);
@@ -314,3 +316,14 @@ function animate() {
 }
 
 main();
+
+export interface IElectronAPI {
+    handleBackground: (callback: (event: any, value: any) => void) => void;
+    writeLEDStatus: (onOff:1|0) => any
+}
+
+declare global {
+    interface Window {
+        electronAPI: IElectronAPI;
+    }
+}

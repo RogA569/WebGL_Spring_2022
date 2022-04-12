@@ -7,4 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	handleBackground: (callback:any) => {
 		return ipcRenderer.on('update-background', callback)
 	},
+	writeLEDStatus: (value: 1|0) => {
+		ipcRenderer.invoke('write:LEDStatus', value)
+	},
 })

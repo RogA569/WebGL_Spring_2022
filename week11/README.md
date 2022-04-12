@@ -7,4 +7,8 @@ I wanted the user to generate a randomly positioned cookie (or the first cookie,
 Since I wasn't able to receive these materials by the previously anticipated date (Thursday, April 7), I will instead use the embedded LED on my Arduino Uno. I understand that it doesn't "really" qualify as an interface for controlling my sketch. However, I proceeding with this unsatisfactory implementation as a means of submitting an assignment of some kind, and at least show that I understand the IPC process between my code and my Arduino.
 
 Embedded LED use will involve:
-- LED blinks whenever attracted cookies reach their collective maximum velocity magnitude (7)
+- LED turns on whenever attracted cookies reach their collective maximum velocity magnitude (7)
+
+Issues:
+- The following screenshot is the one error that is preventing my Electron application from being created.
+![Error code: 'firmata' not found](./assets/Screenshot_2022-04-11_001744.jpg)

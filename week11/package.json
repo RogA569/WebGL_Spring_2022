@@ -79,7 +79,7 @@
     "@vercel/webpack-asset-relocator-loader": "1.7.0",
     "css-loader": "^6.0.0",
     "dat.gui": "^0.7.9",
-    "electron": "17.0.1",
+    "electron": "^18.0.3",
     "electron-rebuild": "^3.2.7",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
@@ -93,8 +93,9 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "firmata": "^2.3.0",
     "johnny-five": "^2.1.0",
-    "serialport": "^10.4.0",
+    "node-gyp": "^9.0.0",
     "three": "^0.139.2"
   }
 }
