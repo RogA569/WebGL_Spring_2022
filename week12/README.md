@@ -1,11 +1,3 @@
-<h1> Idea (from document) </h1>
-* Parametric Geometry
-* Torus and Torus Knot Geometry
-* Arduino with potentiometer that can progress story
-	* 0 to 99 → progression of the words in story
-	* Hit 100 → move on to next sequence of words
-* 3D text to emphasize certain words or phrases
-
 <h1>Idea</h1>
 My project idea is an audio-visual story. I am using animations and narration to convey the story.
 
@@ -14,9 +6,9 @@ Researchers find and study the geometric shell of a fallen Golem (pokemon). They
 
 <h2>Sketches</h2>
 
-![Golem Shell and Golem supercomputer (when first discovered)](./assets/IMG_1430.jpg)
+![Golem Shell and Golem supercomputer (when first discovered)](./assets/IMG_1430.JPG)
 
-![Golem XX](.assets/IMG_1431.jpg)
+![Golem XX](./assets/IMG_1431.JPG)
 
 <h2>Inspirations</h2>
 <em>I should note that, as this project progresses, I may update this section with more things that have inspired new ideas for this project.</em>
@@ -28,7 +20,7 @@ Material from https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Red_and_
 
 * Golem (Pokemon)
 
-![Golem, the Megaton Pokemon](.assets/480px-076Golem.png)
+![Golem, the Megaton Pokemon](./assets/480px-076Golem.png)
 
 * Golem XIV, the supercomputer from Stanislaw Lem's story "Golem XIV" in his book, <em>Imaginary Magnitude</em>.
 
