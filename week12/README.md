@@ -13,9 +13,11 @@ Researchers find and study the geometric shell of a fallen Golem (pokemon). They
 <h2>Inspirations</h2>
 <em>I should note that, as this project progresses, I may update this section with more things that have inspired new ideas for this project.</em>
 
+
 * The Red and Blue Pill from the Matrix, as the GREEN and RED LED light.
 
 ![Red and Blue Pill](./assets/512px-Red_and_blue_pill.jpg)
+
 Material from https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Red_and_blue_pill.jpg/512px-Red_and_blue_pill.jpg . Disclaimer: this image is not my own. Copyright: W.carter, CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0>, via Wikimedia Commons
 
 * Golem (Pokemon)
