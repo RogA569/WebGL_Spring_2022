@@ -30,8 +30,6 @@ require("./style.css");
 var THREE = __importStar(require("three"));
 var stats_module_1 = __importDefault(require("three/examples/jsm/libs/stats.module"));
 var DAT = __importStar(require("dat.gui"));
-var shader_vert_1 = __importDefault(require("./assets/shaders/shader.vert"));
-var shader_frag_1 = __importDefault(require("./assets/shaders/shader.frag"));
 var ViewOne_1 = require("./Views/ViewOne");
 var ViewTwo_1 = require("./Views/ViewTwo");
 var ViewThree_1 = require("./Views/ViewThree");
@@ -44,11 +42,10 @@ var model = {
     groupX: 0,
     groupY: 0,
     groupAngle: 0,
-    activeView: 0,
-    vertexShader: shader_vert_1["default"],
-    fragmentShader: shader_frag_1["default"]
+    activeView: 0
 };
 var renderer;
+var light;
 var clock = new THREE.Clock();
 var stats;
 var viewOne;
@@ -60,9 +57,7 @@ var viewSix;
 var viewSeven;
 var viewEight;
 var views = [];
-var shaderMat;
 function main() {
-    // loadShaders()
     initScene();
     initStats();
     initGUI();
@@ -81,27 +76,18 @@ function initScene() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    var light = new THREE.PointLight(0xFFFFFF, 1, 0);
+    light.position.set(100, 200, 100);
     document.body.appendChild(renderer.domElement);
-    viewOne = new ViewOne_1.ViewOne(model, renderer);
-    viewTwo = new ViewTwo_1.ViewTwo(model, renderer);
-    viewThree = new ViewThree_1.ViewThree(model, renderer);
-    viewFour = new ViewFour_1.ViewFour(model, renderer);
-    viewFive = new ViewFive_1.ViewFive(model, renderer);
-    viewSix = new ViewSix_1.ViewSix(model, renderer);
-    viewSeven = new ViewSeven_1.ViewSeven(model, renderer);
-    viewEight = new ViewEight_1.ViewEight(model, renderer);
+    viewOne = new ViewOne_1.ViewOne(model, renderer, light);
+    viewTwo = new ViewTwo_1.ViewTwo(model, renderer, light);
+    viewThree = new ViewThree_1.ViewThree(model, renderer, light);
+    viewFour = new ViewFour_1.ViewFour(model, renderer, light);
+    viewFive = new ViewFive_1.ViewFive(model, renderer, light);
+    viewSix = new ViewSix_1.ViewSix(model, renderer, light);
+    viewSeven = new ViewSeven_1.ViewSeven(model, renderer, light);
+    viewEight = new ViewEight_1.ViewEight(model, renderer, light);
     views.push(viewOne, viewTwo, viewThree, viewFour, viewFive, viewSix, viewSeven, viewEight);
-    console.log(model.activeView);
-    var uniforms = {
-        u_time: { type: 'f', value: 1.0 },
-        u_resolution: { type: 'v2', value: new THREE.Vector2(800, 800) }
-    };
-    shaderMat = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: shader_vert_1["default"],
-        fragmentShader: shader_frag_1["default"],
-        side: THREE.DoubleSide
-    });
     // Init animation
     animate();
 }
@@ -109,24 +95,73 @@ function initListeners() {
     window.electronAPI.changePage(function (event, value) {
         // console.log(event)
         console.log(value);
-        var prev_view = model.activeView;
+        var prev_view = model.activeView; // capture current view before it changes
         if (model.activeView % 2 == 0) {
-            if (value == 1) {
+            if (value >= 0.5) {
                 model.activeView = (model.activeView + 1) % views.length;
             }
         }
         else {
-            if (value == -1) {
+            if (value <= -0.5) {
                 model.activeView = (model.activeView + 1) % views.length;
+                if (prev_view == 7) { // user went back to the first page
+                    // last "page" / ending LED special interactions (red)
+                    window.electronAPI.writeLEDStatus(1);
+                }
             }
         }
-        if (prev_view == 7) { // last "page"
-            if (model.groupAngle < 0) {
-                window.electronAPI.writeLEDStatus(0);
-            }
-            else {
-                window.electronAPI.writeLEDStatus(1);
-            }
+        // play view's narration/animation on a case-by-case basis
+        switch (model.activeView) {
+            case 0:
+                viewEight.audio_elem.pause();
+                viewEight.audio_elem.currentTime = 0;
+                viewOne.audio_elem.play();
+                break;
+            case 1:
+                viewOne.audio_elem.pause();
+                viewOne.audio_elem.currentTime = 0;
+                viewTwo.audio_elem.play();
+                break;
+            case 2:
+                viewTwo.audio_elem.pause();
+                viewTwo.audio_elem.currentTime = 0;
+                viewThree.audio_elem.play();
+                break;
+            case 3:
+                viewThree.audio_elem.pause();
+                viewThree.audio_elem.currentTime = 0;
+                viewFour.audio_elem.play();
+                break;
+            case 4:
+                viewFour.audio_elem.pause();
+                viewFour.audio_elem.currentTime = 0;
+                viewFive.audio_elem.play();
+                viewFive.start_tl = true;
+                break;
+            case 5:
+                viewFive.audio_elem.pause();
+                viewFive.audio_elem.currentTime = 0;
+                viewSix.audio_elem.play();
+                viewSix.start_tl = true;
+                break;
+            case 6:
+                viewSix.audio_elem.pause();
+                viewSix.audio_elem.currentTime = 0;
+                viewSeven.audio_elem.play();
+                viewSeven.start_tl = true;
+                break;
+            case 7:
+                viewSeven.audio_elem.pause();
+                viewSeven.audio_elem.currentTime = 0;
+                viewEight.audio_elem.play();
+                viewEight.start_tl = true;
+                break;
+            default:
+                break;
+        }
+        // last "page" / ending LED special interactions (green)
+        if (model.activeView == 7) {
+            window.electronAPI.writeLEDStatus(0);
         }
     });
     window.addEventListener('resize', onWindowResize, false);
@@ -134,27 +169,57 @@ function initListeners() {
         var key = event.key;
         // console.log(key);
         switch (key) {
-            case 'e':
-                var win = window.open('', 'Canvas Image');
-                var domElement = renderer.domElement;
-                // Makse sure scene is rendered.
+            case 'ArrowRight':
+                model.activeView = (model.activeView + 1) % views.length;
+                // Test Switch
                 switch (model.activeView) {
                     case 0:
-                        renderer.render(viewOne.scene, viewOne.camera);
+                        viewEight.audio_elem.pause();
+                        viewEight.audio_elem.currentTime = 0;
+                        viewOne.audio_elem.play();
                         break;
                     case 1:
-                        renderer.render(viewTwo.scene, viewTwo.camera);
+                        viewOne.audio_elem.pause();
+                        viewOne.audio_elem.currentTime = 0;
+                        viewTwo.audio_elem.play();
+                        break;
+                    case 2:
+                        viewTwo.audio_elem.pause();
+                        viewTwo.audio_elem.currentTime = 0;
+                        viewThree.audio_elem.play();
+                        break;
+                    case 3:
+                        viewThree.audio_elem.pause();
+                        viewThree.audio_elem.currentTime = 0;
+                        viewFour.audio_elem.play();
+                        break;
+                    case 4:
+                        viewFour.audio_elem.pause();
+                        viewFour.audio_elem.currentTime = 0;
+                        viewFive.audio_elem.play();
+                        viewFive.start_tl = true;
+                        break;
+                    case 5:
+                        viewFive.audio_elem.pause();
+                        viewFive.audio_elem.currentTime = 0;
+                        viewSix.audio_elem.play();
+                        viewSix.start_tl = true;
+                        break;
+                    case 6:
+                        viewSix.audio_elem.pause();
+                        viewSix.audio_elem.currentTime = 0;
+                        viewSeven.audio_elem.play();
+                        viewSeven.start_tl = true;
+                        break;
+                    case 7:
+                        viewSeven.audio_elem.pause();
+                        viewSeven.audio_elem.currentTime = 0;
+                        viewEight.audio_elem.play();
+                        viewEight.start_tl = true;
                         break;
                     default:
                         break;
                 }
-                var src = domElement.toDataURL();
-                if (!win)
-                    return;
-                win.document.write("<img src='".concat(src, "' width='").concat(domElement.width, "' height='").concat(domElement.height, "'>"));
-                break;
-            case 'ArrowRight':
-                model.activeView = (model.activeView + 1) % views.length;
                 break;
             case 'ArrowLeft':
                 model.activeView = (model.activeView - 1);
@@ -179,7 +244,6 @@ function animate() {
     switch (model.activeView) {
         case 0:
             viewOne.update(clock, delta);
-            // window.electronAPI.writeLEDBrightness((model.groupAngle + Math.PI) / (Math.PI*2))
             break;
         case 1:
             viewTwo.update(clock, delta);

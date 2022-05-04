@@ -5,9 +5,6 @@ import Stats from 'three/examples/jsm/libs/stats.module';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as DAT from 'dat.gui';
 
-import vertexShader from './assets/shaders/shader.vert';
-import fragmentShader from './assets/shaders/shader.frag';
-
 import { BaseView } from './Views/BaseView';
 import { ViewOne } from './Views/ViewOne';
 import { ViewTwo } from './Views/ViewTwo';
@@ -23,8 +20,6 @@ let model = {
 	groupY: 0,
 	groupAngle: 0,
 	activeView: 0,
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader,
 }
 
 let renderer: THREE.WebGLRenderer;
@@ -39,10 +34,8 @@ let viewSix: ViewSix;
 let viewSeven: ViewSeven;
 let viewEight: ViewEight;
 let views: BaseView[] = [];
-let shaderMat: ShaderMaterial;
 
 function main() {
-    // loadShaders()
 	initScene();
 	initStats();
 	initGUI();
@@ -79,21 +72,6 @@ function initScene() {
 
 	views.push(viewOne, viewTwo, viewThree, viewFour, viewFive, viewSix, viewSeven, viewEight);
 
-	console.log(model.activeView);
-
-	const uniforms = {
-		u_time: { type: 'f', value: 1.0 },
-		u_resolution: { type: 'v2', value: new THREE.Vector2(800, 800) },
-		// u_mouse: { type: 'v2', value: new THREE.Vector2() },
-	};
-
-	shaderMat = new THREE.ShaderMaterial({
-		uniforms: uniforms,
-		vertexShader: vertexShader,
-		fragmentShader: fragmentShader,
-		side: THREE.DoubleSide,
-	});
-
 	// Init animation
 	animate();
 }
@@ -105,11 +83,11 @@ function initListeners() {
 		console.log(value)
 		let prev_view = model.activeView; // capture current view before it changes
 		if (model.activeView % 2 == 0) {
-			if (value == 1) {
+			if (value >= 0.5) {
 				model.activeView = (model.activeView + 1) % views.length;
 			}
 		} else {
-			if (value == -1) {
+			if (value <= -0.5) {
 				model.activeView = (model.activeView + 1) % views.length;
 				if (prev_view == 7) { // user went back to the first page
 					// last "page" / ending LED special interactions (red)
@@ -118,6 +96,59 @@ function initListeners() {
 			}
 		}
 
+		// play view's narration/animation on a case-by-case basis
+		switch (model.activeView) {
+			case 0:
+				viewEight.audio_elem.pause();
+				viewEight.audio_elem.currentTime = 0;
+				viewOne.audio_elem.play();
+				viewOne.tl.restart();
+				break;
+			case 1:
+				viewOne.audio_elem.pause();
+				viewOne.audio_elem.currentTime = 0;
+				viewTwo.audio_elem.play();
+				viewTwo.start_tl = true;
+				break;
+			case 2:
+				viewTwo.audio_elem.pause();
+				viewTwo.audio_elem.currentTime = 0;
+				viewThree.audio_elem.play();
+				viewThree.start_tl = true;
+				break;
+			case 3:
+				viewThree.audio_elem.pause();
+				viewThree.audio_elem.currentTime = 0;
+				viewFour.audio_elem.play();
+				viewFour.start_tl = true;
+				break;
+			case 4:
+				viewFour.audio_elem.pause();
+				viewFour.audio_elem.currentTime = 0;
+				viewFive.audio_elem.play();
+				viewFive.start_tl = true;
+				break;
+			case 5:
+				viewFive.audio_elem.pause();
+				viewFive.audio_elem.currentTime = 0;
+				viewSix.audio_elem.play();
+				viewSix.start_tl = true;
+				break;
+			case 6:
+				viewSix.audio_elem.pause();
+				viewSix.audio_elem.currentTime = 0;
+				viewSeven.audio_elem.play();
+				viewSeven.start_tl = true;
+				break;
+			case 7:
+				viewSeven.audio_elem.pause();
+				viewSeven.audio_elem.currentTime = 0;
+				viewEight.audio_elem.play();
+				viewEight.start_tl = true;
+				break;
+			default:
+				break;
+		}
 		// last "page" / ending LED special interactions (green)
 		if (model.activeView == 7) {
 			window.electronAPI.writeLEDStatus(0);
@@ -132,34 +163,61 @@ function initListeners() {
 		// console.log(key);
 
 		switch (key) {
-			case 'e':
-				const win = window.open('', 'Canvas Image');
-
-				const { domElement } = renderer;
-
-				// Makse sure scene is rendered.
-                switch (model.activeView) {
-                    case 0:
-                        renderer.render(viewOne.scene, viewOne.camera);
-                        break;
-            
-                    case 1:
-                        renderer.render(viewTwo.scene, viewTwo.camera);
-                        break;
-            
-                    default:
-                        break;
-                }
-
-				const src = domElement.toDataURL();
-
-				if (!win) return;
-
-				win.document.write(`<img src='${src}' width='${domElement.width}' height='${domElement.height}'>`);
-				break;
-
 			case 'ArrowRight':
 				model.activeView = (model.activeView + 1) % views.length
+				// Test Switch
+				switch (model.activeView) {
+					case 0:
+						viewEight.audio_elem.pause();
+						viewEight.audio_elem.currentTime = 0;
+						viewOne.audio_elem.play();
+						viewOne.tl.restart();
+						break;
+					case 1:
+						viewOne.audio_elem.pause();
+						viewOne.audio_elem.currentTime = 0;
+						viewTwo.audio_elem.play();
+						viewTwo.start_tl = true;
+						break;
+					case 2:
+						viewTwo.audio_elem.pause();
+						viewTwo.audio_elem.currentTime = 0;
+						viewThree.audio_elem.play();
+						viewThree.start_tl = true;
+						break;
+					case 3:
+						viewThree.audio_elem.pause();
+						viewThree.audio_elem.currentTime = 0;
+						viewFour.audio_elem.play();
+						viewFour.start_tl = true;
+						break;
+					case 4:
+						viewFour.audio_elem.pause();
+						viewFour.audio_elem.currentTime = 0;
+						viewFive.audio_elem.play();
+						viewFive.start_tl = true;
+						break;
+					case 5:
+						viewFive.audio_elem.pause();
+						viewFive.audio_elem.currentTime = 0;
+						viewSix.audio_elem.play();
+						viewSix.start_tl = true;
+						break;
+					case 6:
+						viewSix.audio_elem.pause();
+						viewSix.audio_elem.currentTime = 0;
+						viewSeven.audio_elem.play();
+						viewSeven.start_tl = true;
+						break;
+					case 7:
+						viewSeven.audio_elem.pause();
+						viewSeven.audio_elem.currentTime = 0;
+						viewEight.audio_elem.play();
+						viewEight.start_tl = true;
+						break;
+					default:
+						break;
+				}
 				break;
 
 			case 'ArrowLeft':
@@ -190,7 +248,6 @@ function animate() {
 	switch (model.activeView) {
 		case 0:
 			viewOne.update(clock,delta);
-			// window.electronAPI.writeLEDBrightness((model.groupAngle + Math.PI) / (Math.PI*2))
 			break;
 
 		case 1:
@@ -249,7 +306,6 @@ interface ColorMaterial extends THREE.Material {
 export interface IElectronAPI {
 	changePage: (callback: (event:any, value:any) => void) => void,
 	writeLEDStatus: (onOff:1|0) => any
-	// writeLEDBrightness: (brightness: number) => any
 }
 
 declare global {

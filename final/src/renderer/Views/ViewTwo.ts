@@ -1,8 +1,9 @@
 import {
 	Mesh,
 	Renderer,
-	BoxGeometry,
-	MeshPhongMaterial,
+	PointLight,
+	TorusGeometry,
+	MeshToonMaterial,
 	Group,
 	Material,
 	RepeatWrapping,
@@ -12,37 +13,57 @@ import {
 	Vector2
 } from 'three';
 import { BaseView } from "./BaseView";
+import { gsap } from "gsap";
+import sound from '../assets/audio/narration_2.mp3';
 
 export class ViewTwo extends BaseView {
 
-	group: Group;
-	cube: Mesh;
+	light: PointLight;
+	tl: any;
+	start_tl: boolean;
+	torus: Mesh;
+	audio_elem: HTMLAudioElement;
 
 	constructor(model: any, renderer: WebGLRenderer){
 		super(model, renderer);
 
-		this.group = new Group();
-		this.scene.add(this.group);
+		this.light = new PointLight(0xFFFFFF, 1, 0);
+		this.light.position.set(100, 200, 100);
+		this.scene.add(this.light);
 
-		const cubeGeometry = new BoxGeometry();
-		const cubeMaterial = new MeshPhongMaterial({ color: 0x00FF00 });
-		this.cube = new Mesh(cubeGeometry, cubeMaterial);
-		this.cube.castShadow = true;
+		this.tl = gsap.timeline();
+		this.start_tl = false;
 
-		this.group.add(this.cube);
+		const torusGeo = new TorusGeometry(5, 1, 30, 200);
+		const torusMat = new MeshToonMaterial({ color: 0x38B8F9 });
+		this.torus = new Mesh(torusGeo, torusMat);
+		this.torus.position.set(0, -20, -10);
+		this.scene.add(this.torus);
 
-		const mapSize = 1024; // Default 512
-		const cameraNear = 0.5; // Default 0.5
-		const cameraFar = 500; // Default 500
+		this.audio_elem = document.createElement('audio');
+		this.audio_elem.src = sound;
+		// audio_elem.play();
 	}
 
 	update(clock: Clock, delta: number): void {
-
-		this.cube.rotation.x += 0.01;
-		this.cube.rotation.y += 0.01;
-
-		this.group.rotation.set(0, 0, this.model.groupAngle);
-		this.group.position.set(this.model.groupX, this.model.groupY, 0);
+		// tl stuff
+		if (this.start_tl) {
+			this.tl.to(this.torus.position,
+				{
+					y: 0,
+					duration: 9,
+					ease: "elastic.out(1, 0.3)"
+				}
+			);
+			this.tl.to(this.torus.rotation,
+				{
+					x: Math.PI,
+					y: -Math.PI * 2,
+					duration: 9,
+					ease: "circ.inOut"
+				}, "-=0.2"
+			);
+		}
 	}
 }
 

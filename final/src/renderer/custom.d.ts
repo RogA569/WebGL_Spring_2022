@@ -27,8 +27,3 @@ declare module '*.mp3' {
     const content: any;
     export default content;
 }
-
-declare module 'electron-audio-conversion/index.js' {
-    const content: any;
-    export default content;
-}

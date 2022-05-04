@@ -7,9 +7,6 @@ electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     changePage: function (callback) { return electron_1.ipcRenderer.on('change-page', callback); },
     writeLEDStatus: function (value) {
         electron_1.ipcRenderer.invoke('write:LEDStatus', value);
-    },
-    writeLEDBrightness: function (brightness) {
-        electron_1.ipcRenderer.invoke('write:LEDBrightness', brightness);
     }
 });
 //# sourceMappingURL=preload.js.map

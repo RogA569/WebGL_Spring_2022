@@ -1,7 +1,8 @@
 import {
 	Mesh,
 	Renderer,
-	BoxGeometry,
+	PointLight,
+	CapsuleGeometry,
 	MeshPhongMaterial,
 	Group,
 	Material,
@@ -12,37 +13,81 @@ import {
 	Vector2
 } from 'three';
 import { BaseView } from "./BaseView";
+import sound from '../assets/audio/narration_4.mp3';
+import { gsap } from "gsap";
 
 export class ViewFour extends BaseView {
 
-	group: Group;
-	cube: Mesh;
+	light: PointLight;
+	tl: any;
+	start_tl: boolean;
+	redCapsule: Mesh;
+	blueCapsule: Mesh;
+	audio_elem: HTMLAudioElement;
 
 	constructor(model: any, renderer: WebGLRenderer){
 		super(model, renderer);
 
-		this.group = new Group();
-		this.scene.add(this.group);
+		this.light = new PointLight(0xFFFFFF, 1, 0);
+		this.light.position.set(100, 200, 100);
+		this.scene.add(this.light);
 
-		const cubeGeometry = new BoxGeometry();
-		const cubeMaterial = new MeshPhongMaterial({ color: 0xFFFF00 });
-		this.cube = new Mesh(cubeGeometry, cubeMaterial);
-		this.cube.castShadow = true;
+		this.tl = gsap.timeline();
+		this.start_tl = false;
 
-		this.group.add(this.cube);
+		const capsuleGeo = new CapsuleGeometry(0.65, 1.2, 4, 8);
+		const redCapsuleMat = new MeshPhongMaterial({color: 0xFF0000});
+		const blueCapsuleMat = new MeshPhongMaterial({color: 0x0000FF});
 
-		const mapSize = 1024; // Default 512
-		const cameraNear = 0.5; // Default 0.5
-		const cameraFar = 500; // Default 500
+		this.redCapsule = new Mesh(capsuleGeo, redCapsuleMat);
+		this.redCapsule.position.set(5, -5, 0);
+		this.blueCapsule = new Mesh(capsuleGeo, blueCapsuleMat);
+		this.blueCapsule.position.set(-5, -5, 0);
+		
+		this.scene.add(this.redCapsule, this.blueCapsule);
+
+		this.audio_elem = document.createElement('audio');
+		this.audio_elem.src = sound;
+		// audio_elem.play();
 	}
 
 	update(clock: Clock, delta: number): void {
-
-		this.cube.rotation.x += 0.01;
-		this.cube.rotation.y += 0.01;
-
-		this.group.rotation.set(0, 0, this.model.groupAngle);
-		this.group.position.set(this.model.groupX, this.model.groupY, 0);
+		if (this.start_tl) {
+			this.tl.to(this.redCapsule.position,
+				{
+					x: 0,
+					y: 0,
+					duration: 4,
+					ease: "sine.inOut"
+				},
+			);
+			this.tl.to(this.redCapsule.position,
+				{
+					x: -5,
+					y: -5,
+					duration: 4,
+					ease: "sine.inOut"
+				},
+			);
+			this.tl.to(this.blueCapsule.position,
+				{
+					x: 0,
+					y: 0,
+					duration: 4,
+					ease: "sine.inOut"
+				},
+			);
+			this.tl.to(this.blueCapsule.position,
+				{
+					x: 5,
+					y: -5,
+					duration: 4,
+					ease: "sine.inOut"
+				},
+			);
+			this.redCapsule.rotation.z += delta;
+			this.blueCapsule.rotation.z += delta;
+		}
 	}
 }
 

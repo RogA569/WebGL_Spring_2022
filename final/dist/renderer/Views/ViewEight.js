@@ -14,32 +14,65 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 exports.ViewEight = void 0;
 var three_1 = require("three");
 var BaseView_1 = require("./BaseView");
+var narration_8_mp3_1 = __importDefault(require("../assets/audio/narration_8.mp3"));
+var hello_world_png_1 = __importDefault(require("../assets/hello-world.png"));
+var gsap_1 = require("gsap");
 var ViewEight = /** @class */ (function (_super) {
     __extends(ViewEight, _super);
-    function ViewEight(model, renderer) {
-        var _this = _super.call(this, model, renderer) || this;
+    function ViewEight(model, renderer, light) {
+        var _this = _super.call(this, model, renderer, light) || this;
+        _this.lights = [];
+        _this.tl = gsap_1.gsap.timeline();
+        _this.start_tl = false;
+        for (var i = 0; i < 4; i++) {
+            var dist = 100;
+            var coneAttenuation = .75;
+            var light_1 = new three_1.SpotLight();
+            light_1.distance = dist;
+            light_1.intensity = 0;
+            light_1.penumbra = coneAttenuation;
+            light_1.position.set(0, 30 - i * 20, 6);
+            _this.scene.add(light_1);
+            _this.lights.push(light_1);
+        }
         _this.group = new three_1.Group();
         _this.scene.add(_this.group);
-        var cubeGeometry = new three_1.BoxGeometry();
-        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0xEB8B4D });
-        _this.cube = new three_1.Mesh(cubeGeometry, cubeMaterial);
-        _this.cube.castShadow = true;
-        _this.group.add(_this.cube);
-        var mapSize = 1024; // Default 512
-        var cameraNear = 0.5; // Default 0.5
-        var cameraFar = 500; // Default 500
-        _this.rewrite_led = false; // Flag: special ending interaction with LED
+        var torKnotGeo = new three_1.TorusKnotGeometry(10, 0.75, 100, 16);
+        var torKnotMat = new three_1.MeshPhongMaterial({ color: 0x8D99AE });
+        _this.torusKnot = new three_1.Mesh(torKnotGeo, torKnotMat);
+        _this.torusKnot.position.set(0, 0, -20);
+        _this.group.add(_this.torusKnot);
+        var sphereGeo = new three_1.SphereGeometry(4, 64, 32);
+        var texture = new three_1.TextureLoader().load(hello_world_png_1["default"]);
+        var sphereMat = new three_1.MeshPhongMaterial({ map: texture });
+        _this.earthSphere = new three_1.Mesh(sphereGeo, sphereMat);
+        _this.earthSphere.position.set(0, 0, -20);
+        _this.scene.add(_this.earthSphere);
+        _this.audio_elem = document.createElement('audio');
+        _this.audio_elem.src = narration_8_mp3_1["default"];
         return _this;
     }
     ViewEight.prototype.update = function (clock, delta) {
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
+        this.torusKnot.rotation.x += 0.01;
+        this.torusKnot.rotation.y += 0.01;
         this.group.rotation.set(0, 0, this.model.groupAngle);
         this.group.position.set(this.model.groupX, this.model.groupY, 0);
+        if (this.start_tl) {
+            for (var i = 0; i < this.lights.length; i++) {
+                this.tl.to(this.lights[i], {
+                    intensity: 0.25,
+                    duration: 13,
+                    ease: "slow (0.7, 0.4, false)"
+                }, "".concat(i / 2));
+            }
+        }
     };
     return ViewEight;
 }(BaseView_1.BaseView));

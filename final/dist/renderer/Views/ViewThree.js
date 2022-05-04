@@ -14,25 +14,29 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 exports.ViewThree = void 0;
 var three_1 = require("three");
 var BaseView_1 = require("./BaseView");
+var narration_3_mp3_1 = __importDefault(require("../assets/audio/narration_3.mp3"));
 var ViewThree = /** @class */ (function (_super) {
     __extends(ViewThree, _super);
-    function ViewThree(model, renderer) {
-        var _this = _super.call(this, model, renderer) || this;
+    function ViewThree(model, renderer, light) {
+        var _this = _super.call(this, model, renderer, light) || this;
         _this.group = new three_1.Group();
         _this.scene.add(_this.group);
         var cubeGeometry = new three_1.BoxGeometry();
-        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0x0000FF });
+        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0xEB8B4D });
         _this.cube = new three_1.Mesh(cubeGeometry, cubeMaterial);
         _this.cube.castShadow = true;
         _this.group.add(_this.cube);
-        var mapSize = 1024; // Default 512
-        var cameraNear = 0.5; // Default 0.5
-        var cameraFar = 500; // Default 500
+        _this.audio_elem = document.createElement('audio');
+        _this.audio_elem.src = narration_3_mp3_1["default"];
         return _this;
+        // audio_elem.play();
     }
     ViewThree.prototype.update = function (clock, delta) {
         this.cube.rotation.x += 0.01;

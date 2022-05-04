@@ -1,7 +1,10 @@
 import {
 	Mesh,
 	Renderer,
-	BoxGeometry,
+	PointLight,
+	TorusKnotGeometry,
+	SphereGeometry,
+	TextureLoader,
 	MeshPhongMaterial,
 	Group,
 	Material,
@@ -9,40 +12,68 @@ import {
 	MeshBasicMaterial,
 	WebGLRenderer,
 	Clock,
-	Vector2
+	Vector2,
+	SpotLight
 } from 'three';
 import { BaseView } from "./BaseView";
+import { gsap } from "gsap";
+import sound from '../assets/audio/narration_5.mp3';
+import pngTexture from '../assets/hello-world.png';
 
 export class ViewFive extends BaseView {
 
-	group: Group;
-	cube: Mesh;
+	light: SpotLight;
+	tl: any;
+	start_tl: boolean;
+	torusKnot: Mesh;
+	earthSphere: Mesh;
+	audio_elem: HTMLAudioElement;
 
 	constructor(model: any, renderer: WebGLRenderer){
 		super(model, renderer);
 
-		this.group = new Group();
-		this.scene.add(this.group);
+		const dist = 100;
+		const coneAttenuation = .75;
+		this.light = new SpotLight();
+		this.light.distance = dist;
+		this.light.intensity = 0;
+		this.light.penumbra = coneAttenuation;
+		this.light.position.set(0, 30, 6);
+		this.scene.add(this.light);
 
-		const cubeGeometry = new BoxGeometry();
-		const cubeMaterial = new MeshPhongMaterial({ color: 0xFF00FF });
-		this.cube = new Mesh(cubeGeometry, cubeMaterial);
-		this.cube.castShadow = true;
+		this.tl = gsap.timeline();
+		this.start_tl = false;
 
-		this.group.add(this.cube);
+		const torKnotGeo = new TorusKnotGeometry(10, 0.75, 100, 16);
+		const torKnotMat = new MeshPhongMaterial({ color: 0x8D99AE });
+		this.torusKnot = new Mesh(torKnotGeo, torKnotMat);
+		this.torusKnot.position.set(0, 0, -20);
+		this.scene.add(this.torusKnot);
 
-		const mapSize = 1024; // Default 512
-		const cameraNear = 0.5; // Default 0.5
-		const cameraFar = 500; // Default 500
+		const sphereGeo = new SphereGeometry(4, 64, 32);
+		const texture = new TextureLoader().load(pngTexture);
+		const sphereMat = new MeshPhongMaterial({map: texture});
+		this.earthSphere = new Mesh(sphereGeo, sphereMat);
+		this.earthSphere.position.set(0, 0, -20);
+		this.scene.add(this.earthSphere);
+
+		this.audio_elem = document.createElement('audio');
+		this.audio_elem.src = sound;	
 	}
 
 	update(clock: Clock, delta: number): void {
+		this.torusKnot.rotation.x += 0.01;
+		this.torusKnot.rotation.y += 0.01;
 
-		this.cube.rotation.x += 0.01;
-		this.cube.rotation.y += 0.01;
-
-		this.group.rotation.set(0, 0, this.model.groupAngle);
-		this.group.position.set(this.model.groupX, this.model.groupY, 0);
+		if (this.start_tl) {
+			this.tl.to(this.light, 
+				{
+			 		intensity: 0.1,
+			 		duration: 10,
+			 		ease: "slow (0.7, 0.4, false)"
+				}
+			);
+		}
 	}
 }
 

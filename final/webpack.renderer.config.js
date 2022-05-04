@@ -12,6 +12,11 @@ rules.push({
 });
 
 rules.push({
+  test: /\.(mp3|wav|png)$/i,
+  use: 'file-loader',
+});
+
+rules.push({
   test: /\.(frag|vert)$/i,
   use: 'raw-loader',
 });

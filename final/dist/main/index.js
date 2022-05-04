@@ -60,23 +60,20 @@ var createWindow = function () {
             // console.log(value)
             if (value === 0) {
                 green.on();
+                red.off();
             }
             else {
+                green.off();
                 red.on();
             }
         });
-        // ipcMain.handle('write:LEDBrightness', (event: any, brightness: number) => {
-        //   console.log(event)
-        //   console.log(brightness)
-        //   led.brightness(brightness * 255)
-        // })
         var potentiometer = new five.Sensor({
             pin: "A0",
             frequency: 250,
-            threshold: 5
+            threshold: 100
         });
         potentiometer.on("change", function () {
-            // console.log(this.value)
+            console.log(this.value);
             mainWindow.webContents.send('change-page', (this.value / 1023.0) * 2.0 - 1.0);
         });
     });

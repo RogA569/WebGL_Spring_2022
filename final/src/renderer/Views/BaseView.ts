@@ -1,11 +1,10 @@
-import { Clock, PerspectiveCamera, Renderer, Scene, WebGLRenderer, SpotLight } from "three"
+import { Clock, PerspectiveCamera, Renderer, Scene, WebGLRenderer } from "three"
 
 export class BaseView {
 
 	scene: Scene;
 	camera: PerspectiveCamera;
 	renderer: WebGLRenderer;
-	light: SpotLight;
 
 	model: any;
 
@@ -15,14 +14,6 @@ export class BaseView {
 		this.camera.position.z = 5;
 		this.renderer = renderer;
 		this.model = model;
-
-		const dist = 100;
-		const coneAttenuation = .75;
-		this.light = new SpotLight();
-		this.light.distance = dist;
-		this.light.penumbra = coneAttenuation
-		this.light.position.set(0, 30, 0);
-		this.scene.add(this.light);
 	}
 
 	update(clock: Clock, delta: number): void {}
