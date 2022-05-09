@@ -21,28 +21,42 @@ exports.__esModule = true;
 exports.ViewTwo = void 0;
 var three_1 = require("three");
 var BaseView_1 = require("./BaseView");
+var gsap_1 = require("gsap");
 var narration_2_mp3_1 = __importDefault(require("../assets/audio/narration_2.mp3"));
 var ViewTwo = /** @class */ (function (_super) {
     __extends(ViewTwo, _super);
-    function ViewTwo(model, renderer, light) {
-        var _this = _super.call(this, model, renderer, light) || this;
-        _this.group = new three_1.Group();
-        _this.scene.add(_this.group);
-        var cubeGeometry = new three_1.BoxGeometry();
-        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0xEB8B4D });
-        _this.cube = new three_1.Mesh(cubeGeometry, cubeMaterial);
-        _this.cube.castShadow = true;
-        _this.group.add(_this.cube);
+    function ViewTwo(model, renderer) {
+        var _this = _super.call(this, model, renderer) || this;
+        _this.light = new three_1.PointLight(0xFFFFFF, 1, 0);
+        _this.light.position.set(100, 200, 100);
+        _this.scene.add(_this.light);
+        _this.tl = gsap_1.gsap.timeline();
+        _this.start_tl = false;
+        var torusGeo = new three_1.TorusGeometry(5, 1, 30, 200);
+        var torusMat = new three_1.MeshToonMaterial({ color: 0x38B8F9 });
+        _this.torus = new three_1.Mesh(torusGeo, torusMat);
+        _this.torus.position.set(0, -20, -10);
+        _this.scene.add(_this.torus);
         _this.audio_elem = document.createElement('audio');
         _this.audio_elem.src = narration_2_mp3_1["default"];
         return _this;
         // audio_elem.play();
     }
     ViewTwo.prototype.update = function (clock, delta) {
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
-        this.group.rotation.set(0, 0, this.model.groupAngle);
-        this.group.position.set(this.model.groupX, this.model.groupY, 0);
+        // tl stuff
+        if (this.start_tl) {
+            this.tl.to(this.torus.position, {
+                y: 0,
+                duration: 9,
+                ease: "elastic.out(1, 0.3)"
+            });
+            this.tl.to(this.torus.rotation, {
+                x: Math.PI,
+                y: -Math.PI * 2,
+                duration: 9,
+                ease: "circ.inOut"
+            }, "-=0.2");
+        }
     };
     return ViewTwo;
 }(BaseView_1.BaseView));

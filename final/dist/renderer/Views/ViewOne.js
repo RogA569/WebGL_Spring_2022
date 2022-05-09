@@ -21,51 +21,39 @@ exports.__esModule = true;
 exports.ViewOne = void 0;
 var three_1 = require("three");
 var BaseView_1 = require("./BaseView");
+var gsap_1 = require("gsap");
 var narration_1_mp3_1 = __importDefault(require("../assets/audio/narration_1.mp3"));
 var ViewOne = /** @class */ (function (_super) {
     __extends(ViewOne, _super);
-    // plane: Mesh;
-    function ViewOne(model, renderer, light) {
-        var _this = _super.call(this, model, renderer, light) || this;
-        _this.group = new three_1.Group();
-        _this.scene.add(_this.group);
-        var cubeGeometry = new three_1.BoxGeometry();
-        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0xA8A9A1 });
-        _this.cube = new three_1.Mesh(cubeGeometry, cubeMaterial);
-        _this.cube.castShadow = true;
-        // this.group.add(this.cube);	
+    function ViewOne(model, renderer) {
+        var _this = _super.call(this, model, renderer) || this;
+        _this.light = new three_1.PointLight(0xFFFFFF, 1, 0);
+        _this.light.position.set(100, 200, 100);
+        _this.scene.add(_this.light);
         // decimal number (thetaLength) retrived from playing with GUI via this link:
         // https://threejs.org/docs/?q=sphere#api/en/geometries/SphereGeometry
-        var sphereGeo = new three_1.SphereGeometry(1, 32, 32, 0, Math.PI * 2, Math.PI, 2.1865484868985);
-        var sphereMat = new three_1.MeshToonMaterial({ color: 0xA8A9A1 });
+        var sphereGeo = new three_1.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, 2.1865484868985);
+        var sphereMat = new three_1.MeshToonMaterial({ color: 0xA8A9A1, side: three_1.DoubleSide });
         _this.golemShell = new three_1.Mesh(sphereGeo, sphereMat);
+        _this.golemShell.position.set(-8, 0, 0);
         _this.scene.add(_this.golemShell);
-        // const geometryPlane = new PlaneBufferGeometry(6, 6, 10, 10);
-        // const materialPlane = new MeshPhongMaterial({
-        // 	color: 0x666666,
-        // 	side: DoubleSide,
-        // 	flatShading: true,
-        // });
-        // this.plane = new Mesh(geometryPlane, materialPlane)//this.shaderMat);
-        // this.plane.position.z = -2;
-        // this.plane.receiveShadow = true;
-        // this.scene.add(this.plane);
+        _this.tl = gsap_1.gsap.timeline();
         _this.audio_elem = document.createElement('audio');
         _this.audio_elem.src = narration_1_mp3_1["default"];
         _this.audio_elem.play();
         return _this;
     }
     ViewOne.prototype.update = function (clock, delta) {
-        // this.shaderMat.uniforms.u_time.value += delta;
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
-        this.group.rotation.set(0, 0, this.model.groupAngle);
-        this.group.position.set(this.model.groupX, this.model.groupY, 0);
-        // const vertArray = this.plane.geometry.attributes.position;
-        // for (let i = 0; i < vertArray.count; i++) {
-        // 	vertArray.setZ(i, Math.sin(clock.getElapsedTime() + i - vertArray.count / 2) * 0.5 + Math.cos(clock.getElapsedTime() - i) * 0.5);
-        // }
-        // this.plane.geometry.attributes.position.needsUpdate = true;
+        this.tl.to(this.golemShell.rotation, {
+            z: Math.PI,
+            duration: 3,
+            ease: "circ.out"
+        });
+        this.tl.to(this.golemShell.position, {
+            x: 0,
+            duration: 3,
+            ease: "circ.out"
+        }, "<");
     };
     return ViewOne;
 }(BaseView_1.BaseView));

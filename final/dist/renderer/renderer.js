@@ -45,7 +45,6 @@ var model = {
     activeView: 0
 };
 var renderer;
-var light;
 var clock = new THREE.Clock();
 var stats;
 var viewOne;
@@ -76,17 +75,15 @@ function initScene() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    var light = new THREE.PointLight(0xFFFFFF, 1, 0);
-    light.position.set(100, 200, 100);
     document.body.appendChild(renderer.domElement);
-    viewOne = new ViewOne_1.ViewOne(model, renderer, light);
-    viewTwo = new ViewTwo_1.ViewTwo(model, renderer, light);
-    viewThree = new ViewThree_1.ViewThree(model, renderer, light);
-    viewFour = new ViewFour_1.ViewFour(model, renderer, light);
-    viewFive = new ViewFive_1.ViewFive(model, renderer, light);
-    viewSix = new ViewSix_1.ViewSix(model, renderer, light);
-    viewSeven = new ViewSeven_1.ViewSeven(model, renderer, light);
-    viewEight = new ViewEight_1.ViewEight(model, renderer, light);
+    viewOne = new ViewOne_1.ViewOne(model, renderer);
+    viewTwo = new ViewTwo_1.ViewTwo(model, renderer);
+    viewThree = new ViewThree_1.ViewThree(model, renderer);
+    viewFour = new ViewFour_1.ViewFour(model, renderer);
+    viewFive = new ViewFive_1.ViewFive(model, renderer);
+    viewSix = new ViewSix_1.ViewSix(model, renderer);
+    viewSeven = new ViewSeven_1.ViewSeven(model, renderer);
+    viewEight = new ViewEight_1.ViewEight(model, renderer);
     views.push(viewOne, viewTwo, viewThree, viewFour, viewFive, viewSix, viewSeven, viewEight);
     // Init animation
     animate();
@@ -116,21 +113,25 @@ function initListeners() {
                 viewEight.audio_elem.pause();
                 viewEight.audio_elem.currentTime = 0;
                 viewOne.audio_elem.play();
+                viewOne.tl.restart();
                 break;
             case 1:
                 viewOne.audio_elem.pause();
                 viewOne.audio_elem.currentTime = 0;
                 viewTwo.audio_elem.play();
+                viewTwo.start_tl = true;
                 break;
             case 2:
                 viewTwo.audio_elem.pause();
                 viewTwo.audio_elem.currentTime = 0;
                 viewThree.audio_elem.play();
+                viewThree.start_tl = true;
                 break;
             case 3:
                 viewThree.audio_elem.pause();
                 viewThree.audio_elem.currentTime = 0;
                 viewFour.audio_elem.play();
+                viewFour.start_tl = true;
                 break;
             case 4:
                 viewFour.audio_elem.pause();
@@ -177,21 +178,25 @@ function initListeners() {
                         viewEight.audio_elem.pause();
                         viewEight.audio_elem.currentTime = 0;
                         viewOne.audio_elem.play();
+                        viewOne.tl.restart();
                         break;
                     case 1:
                         viewOne.audio_elem.pause();
                         viewOne.audio_elem.currentTime = 0;
                         viewTwo.audio_elem.play();
+                        viewTwo.start_tl = true;
                         break;
                     case 2:
                         viewTwo.audio_elem.pause();
                         viewTwo.audio_elem.currentTime = 0;
                         viewThree.audio_elem.play();
+                        viewThree.start_tl = true;
                         break;
                     case 3:
                         viewThree.audio_elem.pause();
                         viewThree.audio_elem.currentTime = 0;
                         viewFour.audio_elem.play();
+                        viewFour.start_tl = true;
                         break;
                     case 4:
                         viewFour.audio_elem.pause();

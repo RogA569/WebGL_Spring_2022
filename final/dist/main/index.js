@@ -43,7 +43,7 @@ if (require('electron-squirrel-startup')) {
 var createWindow = function () {
     // Create the browser window.
     var mainWindow = new electron_1.BrowserWindow({
-        width: 1080,
+        width: 800,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
@@ -78,7 +78,7 @@ var createWindow = function () {
         });
     });
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

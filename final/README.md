@@ -1,5 +1,5 @@
 <h1>Idea</h1>
-My project idea is an audio-visual story. I am using animations and narration to convey the story.
+My project idea is an audio-visual story. I am using GSAP animations and narration to convey the story.
 
 <h2>Story</h2>
 Researchers find and study the geometric shell of a fallen Golem (pokemon). They discover a being inside of the shell which they believe helped early civilizations thrive (debunking the idea of extraterrestrial assistance). Thinking that this discovery can help progress humanity onto higher levels (and with the national government's involvement), this superintelligence (known as Golem) receives all of the resources it says it requires to build upon itself. However, once it exists as its 10th iteration (Golem the X), things begin to go horribly wrong. What started as a means towards humanity's flourishing beyond Earth has become the greatest calamity of the species.
@@ -31,13 +31,10 @@ Material from https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Red_and_
 <h2>Potentiometer</h2>
 User can "page through" the story by interacting with a potentiometer connected to a breadboard through Arduino. Specifically, user must turn the potentiometer all the way around to go to the next page. The direction the user should turn (clockwise/ctrclockwise) depends on whether the page is an odd or even number. Even number --> clockwise; odd number --> counterclockwise.
 
-<h2>Spacebar (originally Button)</h2>
-To replay the "page", both its animation and narration.
-
 <h2>Special Ending Interaction</h2>
 
-After the ending, if the user decides to finish the story/experience (i.e. no returning to the first page), an Arduino-interfaced LED (already on when user gets to the last page) will shine in a **GREEN** color.
-If they instead go back to the beginning of the story, the LED will turn to a **RED** color. User can return to the beginning by turning the potentiometer all the way clockwise, as the last page (pg. 8) is an even-numbered page.
+After the ending, if the user decides to finish the story/experience (i.e. no returning to the first page), an Arduino-interfaced LED (already on when user gets to the last page) will shine in a **RED** color.
+If they instead go back to the beginning of the story, the LED will turn to a **GREEN** color. User can return to the beginning by turning the potentiometer all the way clockwise, as the last page (pg. 8) is an even-numbered page.
 <!--  -->
 <!-- What if going back to the beginning gives a new ending? (Earth, shellfied, develops a crack) -->
 

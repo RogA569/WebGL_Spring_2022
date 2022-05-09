@@ -22,27 +22,58 @@ exports.ViewFour = void 0;
 var three_1 = require("three");
 var BaseView_1 = require("./BaseView");
 var narration_4_mp3_1 = __importDefault(require("../assets/audio/narration_4.mp3"));
+var gsap_1 = require("gsap");
 var ViewFour = /** @class */ (function (_super) {
     __extends(ViewFour, _super);
-    function ViewFour(model, renderer, light) {
-        var _this = _super.call(this, model, renderer, light) || this;
-        _this.group = new three_1.Group();
-        _this.scene.add(_this.group);
-        var cubeGeometry = new three_1.BoxGeometry();
-        var cubeMaterial = new three_1.MeshPhongMaterial({ color: 0xEB8B4D });
-        _this.cube = new three_1.Mesh(cubeGeometry, cubeMaterial);
-        _this.cube.castShadow = true;
-        _this.group.add(_this.cube);
+    function ViewFour(model, renderer) {
+        var _this = _super.call(this, model, renderer) || this;
+        _this.light = new three_1.PointLight(0xFFFFFF, 1, 0);
+        _this.light.position.set(100, 200, 100);
+        _this.scene.add(_this.light);
+        _this.tl = gsap_1.gsap.timeline();
+        _this.start_tl = false;
+        var capsuleGeo = new three_1.CapsuleGeometry(0.65, 1.2, 4, 8);
+        var redCapsuleMat = new three_1.MeshPhongMaterial({ color: 0xFF0000 });
+        var blueCapsuleMat = new three_1.MeshPhongMaterial({ color: 0x0000FF });
+        _this.redCapsule = new three_1.Mesh(capsuleGeo, redCapsuleMat);
+        _this.redCapsule.position.set(5, -5, 0);
+        _this.blueCapsule = new three_1.Mesh(capsuleGeo, blueCapsuleMat);
+        _this.blueCapsule.position.set(-5, -5, 0);
+        _this.scene.add(_this.redCapsule, _this.blueCapsule);
         _this.audio_elem = document.createElement('audio');
         _this.audio_elem.src = narration_4_mp3_1["default"];
         return _this;
         // audio_elem.play();
     }
     ViewFour.prototype.update = function (clock, delta) {
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
-        this.group.rotation.set(0, 0, this.model.groupAngle);
-        this.group.position.set(this.model.groupX, this.model.groupY, 0);
+        if (this.start_tl) {
+            this.tl.to(this.redCapsule.position, {
+                x: 0,
+                y: 0,
+                duration: 4,
+                ease: "sine.inOut"
+            });
+            this.tl.to(this.redCapsule.position, {
+                x: -5,
+                y: -5,
+                duration: 4,
+                ease: "sine.inOut"
+            });
+            this.tl.to(this.blueCapsule.position, {
+                x: 0,
+                y: 0,
+                duration: 4,
+                ease: "sine.inOut"
+            });
+            this.tl.to(this.blueCapsule.position, {
+                x: 5,
+                y: -5,
+                duration: 4,
+                ease: "sine.inOut"
+            });
+            this.redCapsule.rotation.z += delta;
+            this.blueCapsule.rotation.z += delta;
+        }
     };
     return ViewFour;
 }(BaseView_1.BaseView));

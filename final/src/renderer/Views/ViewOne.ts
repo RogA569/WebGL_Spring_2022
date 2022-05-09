@@ -49,18 +49,6 @@ export class ViewOne extends BaseView{
 
 		this.tl = gsap.timeline();
 
-		// const geometryPlane = new PlaneBufferGeometry(6, 6, 10, 10);
-		// const materialPlane = new MeshPhongMaterial({
-		// 	color: 0x666666,
-		// 	side: DoubleSide,
-		// 	flatShading: true,
-		// });
-
-		// this.plane = new Mesh(geometryPlane, materialPlane)//this.shaderMat);
-		// this.plane.position.z = -2;
-		// this.plane.receiveShadow = true;
-		// this.scene.add(this.plane);
-
 		this.audio_elem = document.createElement('audio');
 		this.audio_elem.src = sound;
 		this.audio_elem.play();
